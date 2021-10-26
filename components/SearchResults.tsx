@@ -1,5 +1,7 @@
 import {ProductItem} from "./ProductItem";
 
+import {List, ListRowRenderer} from "react-virtualized";
+
 interface SearchResultsProps {
   totalPrice: number;
   results: Array<{
@@ -8,26 +10,35 @@ interface SearchResultsProps {
     priceFormatted: string;
     title: string;
   }>;
-  onAddToWishList: (id: number) => void;
+  onAddToWishlist: (id: number) => void;
 }
 
 export function SearchResults({
   results,
-  onAddToWishList,
+  onAddToWishlist,
   totalPrice,
 }: SearchResultsProps) {
+  const rowRenderer: ListRowRenderer = ({index, key, style}) => {
+    return (
+      <div key={key} style={style}>
+        <ProductItem
+          onAddToWishlist={onAddToWishlist}
+          product={results[index]}
+        />
+      </div>
+    );
+  };
   return (
     <div>
       <h2>{totalPrice}</h2>
-      {results.map((product) => {
-        return (
-          <ProductItem
-            onAddToWishList={onAddToWishList}
-            product={product}
-            key={product.id}
-          />
-        );
-      })}
+      <List
+        height={300}
+        rowHeight={30}
+        width={900}
+        overscanRowCount={5}
+        rowCount={results.length}
+        rowRenderer={rowRenderer}
+      />
     </div>
   );
 }
